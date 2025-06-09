@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "593950153453",
+    "firebase_url": "https://projectict-d8962-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "projectict-d8962",
+    "storage_bucket": "projectict-d8962.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:593950153453:android:c5f55a9b7fe10f3e72cae4",
+        "android_client_info": {
+          "package_name": "com.example.projectict"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDP8iON_tMhi-Xj6mry0s0gKZc83ezXMgY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
