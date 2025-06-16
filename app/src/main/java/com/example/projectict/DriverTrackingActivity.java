@@ -26,7 +26,7 @@ public class DriverTrackingActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
     private DatabaseReference locationRef;
-    private String driverId = "driver123"; // Replace with actual driver ID after login/QR
+    private String driverId = "driver02"; // Replace with actual driver ID after login/QR
     private TextView gpsText;
 
     @Override

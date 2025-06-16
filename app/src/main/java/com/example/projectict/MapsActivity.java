@@ -1,11 +1,6 @@
 package com.example.projectict;
 
-import android.Manifest;
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -19,13 +14,15 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MapsActivity extends FragmentActivity {
 
     private SupportMapFragment supportMapFragment;
-    private FusedLocationProviderClient client;
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
 
@@ -38,51 +35,58 @@ public class MapsActivity extends FragmentActivity {
         supportMapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
-        // Initialize fused location client
-        client = LocationServices.getFusedLocationProviderClient(this);
-
-        // Check permission
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            getCurrentLocation();
-        } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
-        }
-    }
-
-    private void getCurrentLocation() {
-        Task<Location> task = client.getLastLocation();
-        task.addOnSuccessListener(new OnSuccessListener<Location>() {
+        // Load map and fetch driver's Firebase location
+        supportMapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
-            public void onSuccess(final Location location) {
-                if (location != null) {
-                    supportMapFragment.getMapAsync(new OnMapReadyCallback() {
-                        @Override
-                        public void onMapReady(GoogleMap googleMap) {
-                            mMap = googleMap;
+            public void onMapReady(GoogleMap googleMap) {
+                mMap = googleMap;
 
-                            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                            MarkerOptions options = new MarkerOptions()
-                                    .position(latLng)
-                                    .title("I am here");
-
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-                            mMap.addMarker(options);
-                        }
-                    });
+                // Optional: Disable user location blue dot if permissions are granted
+                if (ActivityCompat.checkSelfPermission(MapsActivity.this,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) ==
+                        android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                    mMap.setMyLocationEnabled(true);
                 }
+
+                FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(MapsActivity.this);
+                fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+                    if (location != null) {
+                        LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 16));
+                    }
+                });
+                fetchDriverLocationFromFirebase();
             }
         });
     }
 
-    @Override
-    public void onRequestPermissionsResult(
-            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 44 && grantResults.length > 0 &&
-                grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            getCurrentLocation();
-        }
+    private void fetchDriverLocationFromFirebase() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("bus_locations");
+
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                mMap.clear(); // Optional: clear previous markers
+
+                for (DataSnapshot busSnapshot : snapshot.getChildren()) {
+                    String busId = busSnapshot.getKey();
+                    Double lat = busSnapshot.child("latitude").getValue(Double.class);
+                    Double lng = busSnapshot.child("longitude").getValue(Double.class);
+
+                    if (lat != null && lng != null) {
+                        LatLng position = new LatLng(lat, lng);
+                        mMap.addMarker(new MarkerOptions()
+                                .position(position)
+                                .title("Bus: " + busId));
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle error
+            }
+        });
+
     }
 }
