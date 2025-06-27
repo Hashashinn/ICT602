@@ -26,18 +26,29 @@ public class DriverTrackingActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
     private DatabaseReference locationRef;
-    private String driverId = "driver02"; // Replace with actual driver ID after login/QR
+    private String driverId;
     private TextView gpsText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_tracking);
+
+        // Initialize TextView
         gpsText = findViewById(R.id.gpsText);
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        locationRef = FirebaseDatabase.getInstance().getReference("bus_locations").child(driverId);
+        // Get driver ID from QR
+        driverId = getIntent().getStringExtra("driverId");
 
+        if (driverId == null || driverId.isEmpty()) {
+            Toast.makeText(this, "Driver ID not found. Please scan again.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        // Firebase + GPS setup
+        locationRef = FirebaseDatabase.getInstance().getReference("bus_locations").child(driverId);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         startLocationUpdates();
     }
 

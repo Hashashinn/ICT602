@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:allowBackup="true"
@@ -22,8 +23,23 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyC9fygdMVh0rnWeN9TyVOvZFovMckTmX8I" />
 
-        <!--
+        <!--QR MODULE -->
+        <activity
+            android:name=".DriverQr"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".DriverTrackingActivity"
+            android:exported="true" />
+        <!--QR MODULE -->
+
+
+        <!--
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -37,16 +53,16 @@
        <activity android:name=".RegisterActivity" />-->
 
 
-        <activity
-            android:name=".MapsActivity"
-            android:exported="true"
-            android:label="@string/title_activity_maps">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+<!--        <activity-->
+<!--            android:name=".MapsActivity"-->
+<!--            android:exported="true"-->
+<!--            android:label="@string/title_activity_maps">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
 
         <!--
        <activity
@@ -58,6 +74,8 @@
            </intent-filter>
        </activity>
        -->
+
+
 
     </application>
 
