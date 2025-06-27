@@ -10,7 +10,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -26,7 +25,7 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.register_page);
+        setContentView(R.layout.register_activity);
 
         FirebaseApp.initializeApp(this); // Explicit init
 
@@ -52,7 +51,6 @@ public class RegisterActivity extends AppCompatActivity {
         String password = editPassword.getText().toString().trim();
         String confirmPassword = editConfirmPassword.getText().toString().trim();
 
-        // Validation
         if (TextUtils.isEmpty(name) || TextUtils.isEmpty(studentId) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
             return;
@@ -63,24 +61,21 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        // Register user in Auth
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // Write user profile to Realtime DB
-                        String pushId = dbRef.push().getKey(); // Unique key
-                        UserProfile profile = new UserProfile(pushId, name, studentId, email);
+                        String uid = mAuth.getCurrentUser().getUid();
+                        StudentProfile profile = new StudentProfile(uid, name, studentId, email);
 
-                        dbRef.child(pushId).setValue(profile)
-                                .addOnCompleteListener(storeTask -> {
-                                    if (storeTask.isSuccessful()) {
-                                        Toast.makeText(this, "User registered and profile saved!", Toast.LENGTH_SHORT).show();
-                                        startActivity(new Intent(this, MainActivity.class));
-                                        finish();
-                                    } else {
-                                        Toast.makeText(this, "DB write failed: " + storeTask.getException().getMessage(), Toast.LENGTH_LONG).show();
-                                    }
-                                });
+                        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
+                        // Save profile and role
+                        rootRef.child("user_profiles").child(uid).setValue(profile);
+                        rootRef.child("users").child(uid).child("role").setValue("student");
+
+                        Toast.makeText(this, "Registered successfully!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(this, LoginActivity.class));
+                        finish();
                     } else {
                         Toast.makeText(this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     }

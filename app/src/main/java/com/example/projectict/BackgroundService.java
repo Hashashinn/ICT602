@@ -1,15 +1,28 @@
 package com.example.projectict;
+
+import android.Manifest;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 
-import com.google.android.gms.location.*;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -31,6 +44,16 @@ public class BackgroundService extends Service {
         locationRef = FirebaseDatabase.getInstance().getReference("bus_locations").child(driverId);
         fusedClient = LocationServices.getFusedLocationProviderClient(this);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    "tracking_channel",
+                    "Bus Tracking",
+                    NotificationManager.IMPORTANCE_LOW
+            );
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            if (manager != null) manager.createNotificationChannel(channel);
+        }
+
         startForeground(1, createNotification());
         startTracking();
 
@@ -38,7 +61,6 @@ public class BackgroundService extends Service {
     }
 
     private Notification createNotification() {
-        // Intent to open the app (specifically DriverQr)
         Intent notificationIntent = new Intent(this, DriverQr.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
@@ -46,18 +68,17 @@ public class BackgroundService extends Service {
                 this,
                 0,
                 notificationIntent,
-                PendingIntent.FLAG_IMMUTABLE // or FLAG_UPDATE_CURRENT if targeting below API 31
+                PendingIntent.FLAG_IMMUTABLE
         );
 
         return new NotificationCompat.Builder(this, "tracking_channel")
                 .setContentTitle("Bus Tracking Active")
                 .setContentText("Your location is being updated.")
-                .setSmallIcon(R.drawable.bus)
+                .setSmallIcon(R.drawable.bus)  // Make sure R.drawable.bus exists
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)
                 .build();
     }
-
 
     private void startTracking() {
         LocationRequest request = LocationRequest.create()
@@ -70,13 +91,17 @@ public class BackgroundService extends Service {
             public void onLocationResult(LocationResult result) {
                 Location loc = result.getLastLocation();
                 if (loc != null) {
-                    locationRef.setValue(new DriverQr.BusLocation(loc.getLatitude(), loc.getLongitude()));
+                    BusLocation location = new BusLocation(
+                            loc.getLatitude(),
+                            loc.getLongitude(),
+                            System.currentTimeMillis()
+                    );
+                    locationRef.setValue(location);
                 }
             }
         };
 
-        if (androidx.core.content.ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedClient.requestLocationUpdates(request, locationCallback, getMainLooper());
         }
     }
