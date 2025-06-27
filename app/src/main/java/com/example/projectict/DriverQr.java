@@ -1,9 +1,25 @@
 package com.example.projectict;
 
+import android.location.Location;
 import android.util.Log;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.content.Intent;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import androidx.activity.result.ActivityResultLauncher;
@@ -14,8 +30,11 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import com.google.zxing.ResultPoint;
 import com.journeyapps.barcodescanner.BarcodeCallback;
@@ -26,6 +45,12 @@ public class DriverQr extends AppCompatActivity{
     private static final String TAG = "Driver QR";
     private DecoratedBarcodeView barcodeView;
     private FrameLayout frameLayoutCamera;
+    private FusedLocationProviderClient fusedLocationClient;
+    private LocationCallback locationCallback;
+    private DatabaseReference locationRef;
+    private TextView gpsText;
+    private GoogleMap mMap;
+    private Marker driverMarker;
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
@@ -43,8 +68,11 @@ public class DriverQr extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.driver_qr);
+        gpsText = findViewById(R.id.gpsText);
         frameLayoutCamera = findViewById(R.id.frame_layout_camera);
         checkCameraPermission();
+
+
     }
     private void checkCameraPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
@@ -84,10 +112,10 @@ public class DriverQr extends AppCompatActivity{
                 dialog.dismiss();
 
                 // Start DriverTrackingActivity and pass scannedDriverId
-                Intent intent = new Intent(DriverQr.this, DriverTrackingActivity.class);
-                intent.putExtra("driverId", scannedData);  // this is your driver ID
-                startActivity(intent);
-                finish();
+                dialog.dismiss();
+                frameLayoutCamera.removeAllViews();  // remove QR view
+                barcodeView.pause();
+                startTrackingWith(scannedData);
             });
             builder.setCancelable(false);
             builder.create().show();
@@ -95,9 +123,84 @@ public class DriverQr extends AppCompatActivity{
 
         @Override
         public void possibleResultPoints(List<ResultPoint> resultPoints) {
-// Optional: for visual feedback
+        // Optional: for visual feedback
         }
     };
+    private void startTrackingWith(String driverId) {
+
+        SupportMapFragment mapFragment = SupportMapFragment.newInstance();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frame_layout_camera, mapFragment)
+                .commit();
+
+        mapFragment.getMapAsync(googleMap -> {
+            mMap = googleMap;
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(0, 0), 15));
+        });
+
+        gpsText.setText("Starting location tracking for " + driverId);
+        findViewById(R.id.btnStopTracking).setVisibility(View.VISIBLE);
+
+        // Init Firebase
+        locationRef = FirebaseDatabase.getInstance()
+                .getReference("bus_locations").child(driverId);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 101);
+            return;
+        }
+
+        LocationRequest request = LocationRequest.create()
+                .setInterval(5000)
+                .setFastestInterval(3000)
+                .setPriority(Priority.PRIORITY_HIGH_ACCURACY);
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult result) {
+                Location location = result.getLastLocation();
+                if (location != null && mMap != null) {
+                    double lat = location.getLatitude();
+                    double lng = location.getLongitude();
+                    gpsText.setText("Lat: " + lat + "\nLng: " + lng);
+
+                    LatLng pos = new LatLng(lat, lng);
+                    if (driverMarker == null) {
+                        driverMarker = mMap.addMarker(new MarkerOptions().position(pos).title("Bus Location"));
+                    } else {
+                        driverMarker.setPosition(pos);
+                    }
+
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(pos));
+
+                    // Optionally push to Firebase
+                    locationRef.setValue(new BusLocation(lat, lng));
+                }
+
+            }
+        };
+
+        fusedLocationClient.requestLocationUpdates(request, locationCallback, getMainLooper());
+
+        findViewById(R.id.btnStopTracking).setOnClickListener(v -> {
+            fusedLocationClient.removeLocationUpdates(locationCallback);
+            gpsText.setText("Tracking stopped.");
+            findViewById(R.id.btnStopTracking).setVisibility(View.GONE);
+        });
+    }
+
+    public static class BusLocation {
+        public double latitude, longitude;
+        public BusLocation() {}
+        public BusLocation(double lat, double lng) {
+            this.latitude = lat;
+            this.longitude = lng;
+        }
+    }
     private void startScanner() {
         if (barcodeView != null) {
             barcodeView.resume();
@@ -128,4 +231,5 @@ public class DriverQr extends AppCompatActivity{
             }
         }
     }
+
 }
