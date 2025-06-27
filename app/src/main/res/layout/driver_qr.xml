@@ -28,7 +28,7 @@
         android:layout_width="346dp"
         android:layout_height="385dp"
         android:layout_marginTop="12dp"
-        android:background="#F0F0F0"
+        android:background="@android:color/transparent"
         app:layout_constraintBottom_toTopOf="@id/btnStopTracking"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.492"
