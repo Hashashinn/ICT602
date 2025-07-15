@@ -41,23 +41,24 @@
             android:layout_marginStart="8dp">
 
             <TextView
+                android:id="@+id/tvName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Abu Lapaq Bin Kenyang"
+                android:text="Staff Name"
                 android:textStyle="bold"
                 android:textSize="16sp"/>
 
             <TextView
+                android:id="@+id/tvEmail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="AbuLapaqKenyang123@gmail.com"
-                android:autoLink="email"
-                android:textColor="@android:color/holo_blue_dark"/>
+                android:text="email@example.com"/>
 
             <TextView
+                android:id="@+id/tvId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0987654321"/>
+                android:text="Staff ID"/>
         </LinearLayout>
     </LinearLayout>
 

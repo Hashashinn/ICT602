@@ -62,10 +62,10 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
+                .addOnCompleteListener(task ->  {
                     if (task.isSuccessful()) {
                         String uid = mAuth.getCurrentUser().getUid();
-                        StudentProfile profile = new StudentProfile(uid, name, studentId, email);
+                        Profile profile = new Profile(uid, name, studentId, email);
 
                         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 

@@ -1,16 +1,15 @@
 package com.example.projectict;
 
-public class StudentProfile {
+public class Profile {
     public String userId;
     public String name;
     public String studentId;
     public String email;
 
-    public StudentProfile() {
-        // Required by Firebase
+    public Profile() {
     }
 
-    public StudentProfile(String userId, String name, String studentId, String email) {
+    public Profile(String userId, String name, String studentId, String email) {
         this.userId = userId;
         this.name = name;
         this.studentId = studentId;
