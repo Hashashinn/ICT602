@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.IBinder;
 
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
@@ -61,7 +60,7 @@ public class BackgroundService extends Service {
     }
 
     private Notification createNotification() {
-        Intent notificationIntent = new Intent(this, DriverQr.class);
+        Intent notificationIntent = new Intent(this, DriverScanActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(

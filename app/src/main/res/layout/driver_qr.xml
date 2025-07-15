@@ -5,57 +5,49 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DriverQr">
+    tools:context=".DriverScanActivity"
+    android:background="@drawable/img_4973">
 
-    <!-- GPS Text -->
-
+    <!-- Header Text -->
     <TextView
         android:id="@+id/gpsText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Scan a QR to begin"
         android:textSize="16sp"
+        android:textColor="@android:color/white"
         android:padding="16dp"
+        android:textAlignment="center"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- QR or Location Container -->
+    <!-- Camera / Map Display Area -->
 
     <!-- Stop Tracking Button -->
-
-    <Button
-        android:id="@+id/btnStopTracking"
-        android:layout_width="1dp"
-        android:layout_height="wrap_content"
-        android:text="Stop Tracking"
-        android:visibility="gone"
-        android:layout_margin="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/img_4973"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
-
     <FrameLayout
         android:id="@+id/frame_layout_camera"
-        android:layout_width="294dp"
-        android:layout_height="295dp"
-        android:layout_marginTop="12dp"
+        android:layout_width="353dp"
+        android:layout_height="545dp"
         android:background="@android:color/transparent"
         app:layout_constraintBottom_toTopOf="@id/btnStopTracking"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/gpsText"
-        app:layout_constraintVertical_bias="0.298">
+        app:layout_constraintVertical_bias="0.0" />
 
-    </FrameLayout>
+    <Button
+        android:id="@+id/btnStopTracking"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stop Tracking"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#B084F4"
+        android:layout_margin="16dp"
+        android:layout_marginBottom="32dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,7 +4,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -17,7 +16,6 @@ import android.Manifest;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -28,13 +26,12 @@ import androidx.fragment.app.FragmentManager;
 import com.google.android.gms.location.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
-import com.google.firebase.database.FirebaseDatabase;
 import com.journeyapps.barcodescanner.*;
 
 import com.google.zxing.ResultPoint;
 import java.util.List;
 
-public class DriverQr extends AppCompatActivity {
+public class DriverScanActivity extends AppCompatActivity {
     private static final String TAG = "Driver QR";
     private DecoratedBarcodeView barcodeView;
     private FrameLayout frameLayoutCamera;
@@ -59,6 +56,8 @@ public class DriverQr extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.driver_qr);
+
+
 
         gpsText = findViewById(R.id.gpsText);
         frameLayoutCamera = findViewById(R.id.frame_layout_camera);
@@ -107,7 +106,7 @@ public class DriverQr extends AppCompatActivity {
             barcodeView.pause();
 
             String scannedData = result.getText();
-            new AlertDialog.Builder(DriverQr.this)
+            new AlertDialog.Builder(DriverScanActivity.this)
                     .setTitle("Confirm Start Tracking")
                     .setMessage("Driver ID: " + scannedData + "\n\nStart tracking?")
                     .setPositiveButton("Yes", (dialog, which) -> {
@@ -147,18 +146,26 @@ public class DriverQr extends AppCompatActivity {
 
         ((SupportMapFragment) fragment).getMapAsync(googleMap -> {
             mMap = googleMap;
+
             FusedLocationProviderClient fusedClient = LocationServices.getFusedLocationProviderClient(this);
+
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                mMap.setMyLocationEnabled(true);
+
                 fusedClient.getLastLocation().addOnSuccessListener(location -> {
                     if (location != null) {
                         LatLng current = new LatLng(location.getLatitude(), location.getLongitude());
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 17));
                         mMap.addMarker(new MarkerOptions().position(current).title("You"));
+                    } else {
+                        Toast.makeText(this, "Couldn't get location. Make sure GPS is on.", Toast.LENGTH_SHORT).show();
                     }
                 });
-                mMap.setMyLocationEnabled(true);
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1001);
             }
         });
+
 
         gpsText.setText("Starting location tracking for " + driverId);
         findViewById(R.id.btnStopTracking).setVisibility(View.VISIBLE);
@@ -175,11 +182,14 @@ public class DriverQr extends AppCompatActivity {
                         stopService(new Intent(this, BackgroundService.class));
                         getSharedPreferences(PREFS, MODE_PRIVATE).edit().clear().apply();
                         isTracking = false;
-                        gpsText.setText("Tracking stopped.");
+
                         Toast.makeText(this, "Tracking stopped.", Toast.LENGTH_SHORT).show();
-                        findViewById(R.id.btnStopTracking).setVisibility(View.GONE);
-                        frameLayoutCamera.removeAllViews();
-                        setupAndStartScanner();
+
+                        // ✅ Return to DriverMainActivity and default to Track tab
+                        Intent backToMain = new Intent(this, DriverMainActivity.class);
+                        backToMain.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(backToMain);
+                        finish(); // Prevent coming back here on back press
                     })
                     .setNegativeButton("No", null)
                     .show();

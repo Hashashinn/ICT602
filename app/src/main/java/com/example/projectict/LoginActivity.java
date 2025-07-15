@@ -6,14 +6,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class LoginActivity extends AppCompatActivity {
@@ -51,9 +47,9 @@ public class LoginActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "Logged in as " + role, Toast.LENGTH_SHORT).show();
 
                                 if ("driver".equalsIgnoreCase(role)) {
-                                    startActivity(new Intent(LoginActivity.this, DriverQr.class));
+                                    startActivity(new Intent(LoginActivity.this, DriverMainActivity.class));
                                 } else if ("student".equalsIgnoreCase(role)) {
-                                    startActivity(new Intent(LoginActivity.this, StudentTrack.class));
+                                    startActivity(new Intent(LoginActivity.this, StudentMainActivity.class));
                                 } else {
                                     Toast.makeText(this, "Unknown role.", Toast.LENGTH_SHORT).show();
                                 }

@@ -4,13 +4,17 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Location;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -33,42 +37,58 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StudentTrack extends FragmentActivity {
+public class StudentTrackFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private final Map<String, Marker> busMarkers = new HashMap<>();
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.student_track);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        View view = inflater.inflate(R.layout.student_track, container, false);
 
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(@NonNull GoogleMap googleMap) {
-                    mMap = googleMap;
+        // Dynamically load the SupportMapFragment
+        SupportMapFragment mapFragment = new SupportMapFragment();
+        getChildFragmentManager().beginTransaction()
+                .replace(R.id.map_container, mapFragment)
+                .commit();
 
-                    if (ActivityCompat.checkSelfPermission(StudentTrack.this,
-                            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        mMap.setMyLocationEnabled(true);
-                    }
+        mapFragment.getMapAsync(this);
 
-                    FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(StudentTrack.this);
-                    fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-                        if (location != null) {
-                            LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 16));
-                        }
-                    });
+        return view;
+    }
 
-                    trackBuses(); // Start tracking once map is ready
-                }
-            });
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mMap = googleMap;
+
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(requireActivity(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1001);
+            return;
         }
+
+        mMap.setMyLocationEnabled(true);
+
+        FusedLocationProviderClient fusedLocationClient =
+                LocationServices.getFusedLocationProviderClient(requireActivity());
+
+        fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+            if (location != null) {
+                LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 16));
+            } else {
+                Toast.makeText(requireContext(), "Unable to get current location. Please try again.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        trackBuses();
     }
 
     private void trackBuses() {
@@ -95,9 +115,7 @@ public class StudentTrack extends FragmentActivity {
             }
 
             @Override public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {}
-            @Override public void onCancelled(@NonNull DatabaseError error) {
-                // Optional: log error
-            }
+            @Override public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
 
@@ -109,7 +127,9 @@ public class StudentTrack extends FragmentActivity {
 
         if (busId != null && lat != null && lng != null) {
             LatLng position = new LatLng(lat, lng);
-            String time = timestamp != null ? DateFormat.format("hh:mm:ss a", new Date(timestamp)).toString() : "Unknown";
+            String time = timestamp != null
+                    ? DateFormat.format("hh:mm:ss a", new Date(timestamp)).toString()
+                    : "Unknown";
 
             if (busMarkers.containsKey(busId)) {
                 busMarkers.get(busId).setPosition(position);
@@ -124,8 +144,7 @@ public class StudentTrack extends FragmentActivity {
                                         BitmapFactory.decodeResource(getResources(), R.drawable.marker),
                                         80, 80, false
                                 )
-                        ))
-                );
+                        )));
                 if (marker != null) {
                     busMarkers.put(busId, marker);
                 }
