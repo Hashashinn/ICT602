@@ -6,7 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.widget.ImageView;
+import com.bumptech.glide.Glide;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -21,6 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 public class StudentProfileFragment extends Fragment {
 
     private TextView nameTextView, emailTextView, studentIdTextView;
+    private ImageView profileImage;
 
     @Nullable
     @Override
@@ -32,7 +34,7 @@ public class StudentProfileFragment extends Fragment {
         nameTextView = view.findViewById(R.id.tvName);
         emailTextView = view.findViewById(R.id.tvEmail);
         studentIdTextView = view.findViewById(R.id.tvId);
-
+        profileImage = view.findViewById(R.id.profileImage);
         loadProfileFromFirebase();
 
         return view;
@@ -50,11 +52,19 @@ public class StudentProfileFragment extends Fragment {
                     nameTextView.setText(profile.name);
                     emailTextView.setText(profile.email);
                     studentIdTextView.setText(profile.studentId);
-                } else {
+
+                    if (profile.imageUrl != null && !profile.imageUrl.isEmpty()) {
+                        Glide.with(requireContext())
+                                .load(profile.imageUrl)
+                                .placeholder(R.drawable.profile_pic)
+                                .into(profileImage);
+                    }
+                }
+                else {
                     Toast.makeText(getContext(), "Profile not found", Toast.LENGTH_SHORT).show();
                 }
-            }
 
+            }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(getContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();

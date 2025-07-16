@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import android.widget.ImageView;
+import com.bumptech.glide.Glide;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -17,6 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class DriverProfileFragment extends Fragment {
 
     private TextView textName, textEmail, textId;
+    private ImageView profileImage;
 
     @Nullable
     @Override
@@ -28,6 +31,7 @@ public class DriverProfileFragment extends Fragment {
         textName = view.findViewById(R.id.tvName);
         textEmail = view.findViewById(R.id.tvEmail);
         textId = view.findViewById(R.id.tvId);
+        profileImage = view.findViewById(R.id.profileImage);
 
         loadDriverData();
 
@@ -45,6 +49,13 @@ public class DriverProfileFragment extends Fragment {
                     textName.setText(profile.name);
                     textEmail.setText(profile.email);
                     textId.setText(profile.studentId);
+
+                    if (profile.imageUrl != null && !profile.imageUrl.isEmpty()) {
+                        Glide.with(requireContext())
+                                .load(profile.imageUrl)
+                                .placeholder(R.drawable.profile_pic)
+                                .into(profileImage);
+                    }
                 }
             }
         });

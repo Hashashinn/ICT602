@@ -5,14 +5,17 @@ public class Profile {
     public String name;
     public String studentId;
     public String email;
+    public String imageUrl;
 
     public Profile() {
     }
 
-    public Profile(String userId, String name, String studentId, String email) {
+    public Profile(String userId, String name, String studentId, String email, String imageUrl) {
         this.userId = userId;
         this.name = name;
         this.studentId = studentId;
         this.email = email;
+        this.imageUrl = imageUrl;
     }
+
 }
