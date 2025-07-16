@@ -18,19 +18,19 @@ public class DriverMainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_main);
-
+        // Request location permission if not already granted
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1001);
         }
-
+        // Initialize the bottom navigation view
         bottomNav = findViewById(R.id.driver_bottom_nav);
-
+        // Set the default fragment (DriverTrackFragment) on first launch
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.driver_fragment_container, new DriverTrackFragment())
                     .commit();
         }
-
+        // Set listener for navigation item selection
         bottomNav.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
             int id = item.getItemId();
@@ -51,7 +51,7 @@ public class DriverMainActivity extends AppCompatActivity {
             return false;
         });
     }
-
+    // Handle back button presses
     @Override
     public void onBackPressed() {
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.driver_fragment_container);
@@ -62,7 +62,7 @@ public class DriverMainActivity extends AppCompatActivity {
             super.onBackPressed(); // Exit app if already on main tab
         }
     }
-
+    // Ensures correct tab is selected when returning to the activity
     @Override
     protected void onResume() {
         super.onResume();

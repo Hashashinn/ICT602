@@ -69,20 +69,23 @@ public class StudentProfileFragment extends Fragment {
         return view;
 
     }
-
+    /**
+     * Loads the current student's profile data from Firebase
+     */
     private void loadProfileFromFirebase() {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("user_profiles").child(uid);
-
+        // Read data
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Profile profile = snapshot.getValue(Profile.class);
                 if (profile != null) {
+                    // Update text to user information
                     nameTextView.setText(profile.name);
                     emailTextView.setText(profile.email);
                     studentIdTextView.setText(profile.studentId);
-
+                    // Load profile image if available
                     if (profile.imageUrl != null && !profile.imageUrl.isEmpty()) {
                         Glide.with(requireContext())
                                 .load(profile.imageUrl)

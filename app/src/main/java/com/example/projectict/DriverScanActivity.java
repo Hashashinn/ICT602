@@ -42,7 +42,7 @@ public class DriverScanActivity extends AppCompatActivity {
     private static final String PREFS = "tracking_prefs";
     private static final String KEY_TRACKING = "isTracking";
     private static final String KEY_DRIVER_ID = "driverId";
-
+    //  camera permission request
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) setupAndStartScanner();
@@ -57,17 +57,15 @@ public class DriverScanActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.driver_qr);
 
-
-
         gpsText = findViewById(R.id.gpsText);
         frameLayoutCamera = findViewById(R.id.frame_layout_camera);
-
+        // Create notification channel for foreground service
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("tracking_channel", "Bus Tracking", NotificationManager.IMPORTANCE_LOW);
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
-
+        // Check if the app was already tracking (to restore after apps close)
         SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
         if (prefs.getBoolean(KEY_TRACKING, false)) {
             String savedDriverId = prefs.getString(KEY_DRIVER_ID, null);
@@ -77,10 +75,9 @@ public class DriverScanActivity extends AppCompatActivity {
                 return;
             }
         }
-
         checkCameraPermission();
     }
-
+    // Check and request for camera permission
     private void checkCameraPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             setupAndStartScanner();
@@ -88,7 +85,7 @@ public class DriverScanActivity extends AppCompatActivity {
             requestPermissionLauncher.launch(Manifest.permission.CAMERA);
         }
     }
-
+    // Initializes the barcode scanner
     private void setupAndStartScanner() {
         if (barcodeView == null) {
             barcodeView = new DecoratedBarcodeView(this);
@@ -98,7 +95,7 @@ public class DriverScanActivity extends AppCompatActivity {
         }
         barcodeView.resume();
     }
-
+    // Handles barcode scan results
     private final BarcodeCallback barcodeCallback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
@@ -106,35 +103,37 @@ public class DriverScanActivity extends AppCompatActivity {
             barcodeView.pause();
 
             String scannedData = result.getText();
+            // Confirmation Dialog after scan QR Code
             new AlertDialog.Builder(DriverScanActivity.this)
                     .setTitle("Confirm Start Tracking")
                     .setMessage("Driver ID: " + scannedData + "\n\nStart tracking?")
                     .setPositiveButton("Yes", (dialog, which) -> {
                         dialog.dismiss();
-                        frameLayoutCamera.removeAllViews();
+                        frameLayoutCamera.removeAllViews(); //remove qr code and bring out google map
                         barcodeView.pause();
                         startTrackingWith(scannedData);
                     })
                     .setNegativeButton("No", (dialog, which) -> {
                         dialog.dismiss();
-                        barcodeView.resume();
+                        barcodeView.resume(); //if no = continue show qr code
                     })
                     .setCancelable(false)
                     .show();
         }
 
         @Override
-        public void possibleResultPoints(List<ResultPoint> resultPoints) {}
+        public void possibleResultPoints(List<ResultPoint> resultPoints) {} //required
     };
-
+    //Tracking Method trigger after driver press ok after scan
     private void startTrackingWith(String driverId) {
+        // Save tracking state to SharedPreferences
         getSharedPreferences(PREFS, MODE_PRIVATE).edit()
                 .putBoolean(KEY_TRACKING, true)
                 .putString(KEY_DRIVER_ID, driverId)
                 .apply();
 
         isTracking = true;
-
+        // Load Google Map fragment dynamically
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = fm.findFragmentByTag("map_fragment");
         if (fragment == null) {
@@ -143,7 +142,7 @@ public class DriverScanActivity extends AppCompatActivity {
                     .replace(R.id.frame_layout_camera, fragment, "map_fragment")
                     .commit();
         }
-
+        // display driver’s current location when the map is ready to display
         ((SupportMapFragment) fragment).getMapAsync(googleMap -> {
             mMap = googleMap;
 
@@ -166,65 +165,56 @@ public class DriverScanActivity extends AppCompatActivity {
             }
         });
 
-
+        // To show the driver that the tracking has been started
         gpsText.setText("Starting location tracking for " + driverId);
         findViewById(R.id.btnStopTracking).setVisibility(View.VISIBLE);
-
+        // Start foreground service to run tracking in background
         Intent serviceIntent = new Intent(this, BackgroundService.class);
         serviceIntent.putExtra("driverId", driverId);
         ContextCompat.startForegroundService(this, serviceIntent);
-
+        // Stop tracking button listener
         findViewById(R.id.btnStopTracking).setOnClickListener(v -> {
             new AlertDialog.Builder(this)
                     .setTitle("Stop Tracking?")
                     .setMessage("Are you sure you want to stop tracking?")
                     .setPositiveButton("Yes", (dialog, which) -> {
+                        // Stop background service and reset state
                         stopService(new Intent(this, BackgroundService.class));
                         getSharedPreferences(PREFS, MODE_PRIVATE).edit().clear().apply();
                         isTracking = false;
 
                         Toast.makeText(this, "Tracking stopped.", Toast.LENGTH_SHORT).show();
 
-                        // ✅ Return to DriverMainActivity and default to Track tab
+                        // Return to DriverMainActivity
                         Intent backToMain = new Intent(this, DriverMainActivity.class);
                         backToMain.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(backToMain);
-                        finish(); // Prevent coming back here on back press
+                        finish();
                     })
                     .setNegativeButton("No", null)
                     .show();
         });
     }
-
-    public static class BusLocation {
-        public double latitude, longitude;
-        public BusLocation() {}
-        public BusLocation(double lat, double lng) {
-            this.latitude = lat;
-            this.longitude = lng;
-        }
-    }
-
+    // Resume scanner when activity resumes (only if not tracking)
     @Override
     public void onResume() {
         super.onResume();
         if (!isTracking) startScanner();
     }
-
+    // Pause scanner when activity is paused
     @Override
     public void onPause() {
         super.onPause();
         pauseScanner();
     }
-
+    //QR Scanner
     private void startScanner() {
         if (barcodeView != null) barcodeView.resume();
     }
-
     private void pauseScanner() {
         if (barcodeView != null) barcodeView.pause();
     }
-
+    // Remove scanner view when tracking start
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -232,7 +222,7 @@ public class DriverScanActivity extends AppCompatActivity {
             ((ViewGroup) barcodeView.getParent()).removeView(barcodeView);
         }
     }
-
+    // Disable back button once tracking starts to prevent accidental exit
     @Override
     public void onBackPressed() {
         if (!isTracking) super.onBackPressed();

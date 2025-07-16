@@ -29,19 +29,22 @@ public class DriverProfileFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.driver_profile, container, false);
 
-        // Bind text views (make sure IDs match your XML)
+        // Layout binding
         textName = view.findViewById(R.id.tvName);
         textEmail = view.findViewById(R.id.tvEmail);
         textId = view.findViewById(R.id.tvId);
         profileImage = view.findViewById(R.id.profileImage);
 
+        // Load driver profile data from Firebase
         loadDriverData();
 
+        // Bind logout and change password buttons
         LinearLayout changePasswordBtn = view.findViewById(R.id.btnChangePassword);
         LinearLayout logoutBtn = view.findViewById(R.id.btnLogout);
-
+        // Handle password reset
         changePasswordBtn.setOnClickListener(v -> {
             String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
             FirebaseAuth.getInstance().sendPasswordResetEmail(userEmail)
@@ -50,7 +53,7 @@ public class DriverProfileFragment extends Fragment {
                     .addOnFailureListener(e ->
                             Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
         });
-
+        // Handle logout button
         logoutBtn.setOnClickListener(v -> {
             new androidx.appcompat.app.AlertDialog.Builder(requireContext())
                     .setTitle("Confirm Logout")
@@ -69,18 +72,22 @@ public class DriverProfileFragment extends Fragment {
         return view;
     }
 
+//    Load the current user's profile data from Firebase Realtime Database
     private void loadDriverData() {
+        // Get the current user UID
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        // Find user_profiles in database
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("user_profiles").child(uid);
-
+        // Fetch user data
         ref.get().addOnSuccessListener(snapshot -> {
             if (snapshot.exists()) {
                 Profile profile = snapshot.getValue(Profile.class);
                 if (profile != null) {
+                    // Display set profile data in layout
                     textName.setText(profile.name);
                     textEmail.setText(profile.email);
                     textId.setText(profile.studentId);
-
+                    // Load profile image if user upload image, otherwise show default profile picture
                     if (profile.imageUrl != null && !profile.imageUrl.isEmpty()) {
                         Glide.with(requireContext())
                                 .load(profile.imageUrl)
