@@ -1,9 +1,11 @@
 package com.example.projectict;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ImageView;
@@ -24,6 +26,7 @@ public class StudentProfileFragment extends Fragment {
     private TextView nameTextView, emailTextView, studentIdTextView;
     private ImageView profileImage;
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -37,7 +40,34 @@ public class StudentProfileFragment extends Fragment {
         profileImage = view.findViewById(R.id.profileImage);
         loadProfileFromFirebase();
 
+        LinearLayout changePasswordBtn = view.findViewById(R.id.btnChangePassword);
+        LinearLayout logoutBtn = view.findViewById(R.id.btnLogout);
+
+        // Log Out btn
+        logoutBtn.setOnClickListener(v -> {
+            new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Confirm Logout")
+                    .setMessage("Are you sure you want to log out?")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        FirebaseAuth.getInstance().signOut();
+                        Toast.makeText(getContext(), "Logged out", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(requireActivity(), LoginActivity.class));
+                        requireActivity().finish();
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        });
+
+        // Change Password (Forgot Password Email)
+        changePasswordBtn.setOnClickListener(v -> {
+            String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+            FirebaseAuth.getInstance().sendPasswordResetEmail(userEmail)
+                    .addOnSuccessListener(aVoid -> Toast.makeText(getContext(), "Reset link sent to email", Toast.LENGTH_LONG).show())
+                    .addOnFailureListener(e  -> Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        });
+
         return view;
+
     }
 
     private void loadProfileFromFirebase() {

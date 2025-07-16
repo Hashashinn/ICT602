@@ -1,12 +1,16 @@
 package com.example.projectict;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import android.widget.ImageView;
+import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,6 +38,33 @@ public class DriverProfileFragment extends Fragment {
         profileImage = view.findViewById(R.id.profileImage);
 
         loadDriverData();
+
+        LinearLayout changePasswordBtn = view.findViewById(R.id.btnChangePassword);
+        LinearLayout logoutBtn = view.findViewById(R.id.btnLogout);
+
+        changePasswordBtn.setOnClickListener(v -> {
+            String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+            FirebaseAuth.getInstance().sendPasswordResetEmail(userEmail)
+                    .addOnSuccessListener(aVoid ->
+                            Toast.makeText(getContext(), "Reset link sent to email", Toast.LENGTH_SHORT).show())
+                    .addOnFailureListener(e ->
+                            Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        });
+
+        logoutBtn.setOnClickListener(v -> {
+            new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Confirm Logout")
+                    .setMessage("Are you sure you want to log out?")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        FirebaseAuth.getInstance().signOut();
+                        Toast.makeText(getContext(), "Logged out", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(requireActivity(), LoginActivity.class));
+                        requireActivity().finish();
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        });
+
 
         return view;
     }

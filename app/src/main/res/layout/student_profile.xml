@@ -66,38 +66,42 @@
     </LinearLayout>
 
     <!-- Settings Button -->
+
+    <!-- Log Out Button -->
     <LinearLayout
+
+        android:id="@+id/btnChangePassword"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:orientation="horizontal"
         android:layout_marginTop="16dp"
         android:background="#B0B0B0"
         android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:paddingStart="8dp"
         android:paddingEnd="8dp">
 
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@android:drawable/ic_menu_manage"
-            android:contentDescription="Settings"/>
+            android:contentDescription="Settings"
+            android:src="@android:drawable/ic_menu_manage" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:text="Setting"
-            android:layout_marginStart="8dp"/>
+            android:text="Change Password" />
 
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@android:drawable/ic_media_next"
-            android:contentDescription="Arrow"/>
+            android:contentDescription="Arrow"
+            android:src="@android:drawable/ic_media_next" />
     </LinearLayout>
 
-    <!-- Log Out Button -->
     <LinearLayout
+        android:id="@+id/btnLogout"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:orientation="horizontal"
