@@ -27,18 +27,10 @@ To run this project successfully on your local machine, follow these steps:
 
 ### 1. 🔐 Add Google Maps API Key
 
-Find a file named `local.properties` in the **root directory** of the project (same level as your `build.gradle`) and add: 
+Find a file named `local.properties` in the **root directory** of the project (same level as your `build.gradle`) and add:
+
 MAPS_API_KEY= [Your Google Map API KEY]
-
-### 2. ⚙️ Add this line to `app/build.gradle.kts` inside `defaultConfig {}`
-
-```kotlin
-manifestPlaceholders["MAPS_API_KEY"] =
-    if (project.hasProperty("MAPS_API_KEY"))
-        project.property("MAPS_API_KEY") as String
-    else
-        ""
-```
+<img width="1412" height="293" alt="image" src="https://github.com/user-attachments/assets/5395bb5c-3dba-40d5-9e9c-e6487ebf5770" />
 
 ## 📱 Features
 
