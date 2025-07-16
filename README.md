@@ -6,7 +6,7 @@ This project integrates **Firebase**, **Google Maps**, **QR Scanning**, and **Ba
 
 ---
 
-## 👥 Team Contribution & Acknowledgement
+## 👥 Project Contribution & Acknowledgement
 
 This mobile application was developed by the **MengTracking Group** for the **ICT602 Mobile Technology** course at UiTM.
 
