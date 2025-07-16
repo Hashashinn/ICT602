@@ -21,7 +21,7 @@
         <!-- Google Maps -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyC9fygdMVh0rnWeN9TyVOvZFovMckTmX8I" />
+            android:value="${MAPS_API_KEY}" />
 
         <!-- Foreground location service -->
         <service
