@@ -31,7 +31,7 @@
 
         <!-- Main Activities -->
         <activity
-            android:name=".LoginActivity"
+            android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,6 +39,7 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".LoginActivity" android:exported="true" />
         <activity android:name=".RegisterActivity" android:exported="true" />
         <activity android:name=".DriverScanActivity" android:exported="true" />
         <activity android:name=".StudentMainActivity" android:exported="true" />

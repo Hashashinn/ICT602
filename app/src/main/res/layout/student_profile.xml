@@ -65,8 +65,6 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Settings Button -->
-
     <!-- Log Out Button -->
     <LinearLayout
 
@@ -74,7 +72,8 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginTop="16dp"
-        android:background="#B0B0B0"
+        android:background="#B084F4"
+        android:textColor="#a13df2"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="8dp"
@@ -91,6 +90,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_weight="1"
+            android:textStyle="bold"
             android:text="Change Password" />
 
         <ImageView
@@ -100,13 +100,15 @@
             android:src="@android:drawable/ic_media_next" />
     </LinearLayout>
 
+<!--    Log Out-->
     <LinearLayout
         android:id="@+id/btnLogout"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:orientation="horizontal"
         android:layout_marginTop="8dp"
-        android:background="#B0B0B0"
+        android:background="#B084F4"
+        android:textColor="#222222"
         android:gravity="center_vertical"
         android:paddingStart="8dp"
         android:paddingEnd="8dp">
@@ -122,6 +124,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Log out"
+            android:textStyle="bold"
             android:layout_marginStart="8dp"/>
 
         <ImageView
