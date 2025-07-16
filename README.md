@@ -6,9 +6,9 @@ This project integrates **Firebase**, **Google Maps**, **QR Scanning**, and **Ba
 
 ---
 
-## 👥 Team & Acknowledgement
+## 👥 Team Contribution & Acknowledgement
 
-This project was developed by the **MengTracking Group** for the **ICT602 Mobile Technology** course at UiTM.
+This mobile application was developed by the **MengTracking Group** for the **ICT602 Mobile Technology** course at UiTM.
 
 **Project Supervisor:** Dr. Norkhushaini Bt Awang
 
