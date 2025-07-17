@@ -85,6 +85,7 @@ public class DriverScanActivity extends AppCompatActivity {
             requestPermissionLauncher.launch(Manifest.permission.CAMERA);
         }
     }
+
     // Initializes the barcode scanner
     private void setupAndStartScanner() {
         if (barcodeView == null) {
