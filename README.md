@@ -15,9 +15,10 @@ This mobile application was developed by the **MengTracking Group** for the **IC
 | Name              | Role / Contribution                                 |
 |-------------------|-----------------------------------------------------|
 | Izat Aiman        | Project Leader, Driver-side functionality, Backend  |
-| Ahmad Faqih       | UI/UX Designing                                     |
+| Ahmad Faqih       | UI/UX Designing , About Us Page                                    |
 | Muhammad Hadif    | UI/UX Designing                                     |
 | Mohamad Firdaus   | Student-side functionality                          |
+| Aina Syahirah   |                          |
 
 ---
 
