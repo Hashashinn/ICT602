@@ -88,13 +88,24 @@ public class DriverScanActivity extends AppCompatActivity {
     // Initializes the barcode scanner
     private void setupAndStartScanner() {
         if (barcodeView == null) {
-            barcodeView = new DecoratedBarcodeView(this);
-            barcodeView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            frameLayoutCamera.addView(barcodeView);
+            // Inflate custom layout
+            View scannerView = getLayoutInflater().inflate(R.layout.custom_barcode_scanner, frameLayoutCamera, false);
+            barcodeView = scannerView.findViewById(R.id.zxing_barcode_scanner);
+
+            // Add to frame
+            frameLayoutCamera.addView(scannerView);
+
+            // Customize status text (optional)
+            TextView statusView = scannerView.findViewById(R.id.zxing_status_view);
+            if (statusView != null) {
+                statusView.setText("Scan the driver's QR code to start tracking");
+            }
+
             barcodeView.decodeContinuous(barcodeCallback);
         }
         barcodeView.resume();
     }
+
     // Handles barcode scan results
     private final BarcodeCallback barcodeCallback = new BarcodeCallback() {
         @Override
@@ -149,7 +160,7 @@ public class DriverScanActivity extends AppCompatActivity {
             FusedLocationProviderClient fusedClient = LocationServices.getFusedLocationProviderClient(this);
 
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                mMap.setMyLocationEnabled(true);
+
 
                 fusedClient.getLastLocation().addOnSuccessListener(location -> {
                     if (location != null) {

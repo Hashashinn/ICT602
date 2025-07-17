@@ -16,44 +16,12 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:text="About Us"
-            android:textColor="#000000"
+            android:textColor="?android:textColorPrimary"
             android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp">
 
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:background="#D3D3D3"
-                android:scaleType="centerCrop"
-                android:src="@drawable/izat" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:gravity="center_vertical"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Muhammad Izat Aiman bin Mansor"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="2024544845"
-                    android:textSize="14sp" />
-            </LinearLayout>
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -86,6 +54,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="2024544845"
+                    android:textSize="14sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CDCS251"
                     android:textSize="14sp" />
             </LinearLayout>
         </LinearLayout>
@@ -122,6 +95,12 @@
                     android:layout_height="wrap_content"
                     android:text="2024516651"
                     android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CDCS251"
+                    android:textSize="14sp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -156,6 +135,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="2024978083"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CDCS251"
                     android:textSize="14sp" />
             </LinearLayout>
         </LinearLayout>
@@ -192,6 +177,12 @@
                     android:layout_height="wrap_content"
                     android:text="2024741177"
                     android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CDCS251"
+                    android:textSize="14sp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -226,6 +217,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="2024949807"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CDCS251"
                     android:textSize="14sp" />
             </LinearLayout>
 

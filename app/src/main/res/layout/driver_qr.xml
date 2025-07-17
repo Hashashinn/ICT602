@@ -24,7 +24,7 @@
 
     <!-- Camera / Map Display Area -->
 
-    <!-- Stop Tracking Button -->
+
     <FrameLayout
         android:id="@+id/frame_layout_camera"
         android:layout_width="353dp"
@@ -35,7 +35,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/gpsText"
         app:layout_constraintVertical_bias="0.0" />
-
+    <!-- Stop Tracking Button -->
     <Button
         android:id="@+id/btnStopTracking"
         android:layout_width="wrap_content"
