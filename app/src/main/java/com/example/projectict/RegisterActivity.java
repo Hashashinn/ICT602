@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -58,6 +59,15 @@ public class RegisterActivity extends AppCompatActivity {
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setType("image/*");
             startActivityForResult(intent, 101);
+        });
+
+        //listen to textview click
+        TextView loginRedirect = findViewById(R.id.txtLoginRedirect);
+
+        loginRedirect.setOnClickListener(v -> {
+            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish(); // Optional: closes RegisterActivity so back button doesn't return to it
         });
     }
 
