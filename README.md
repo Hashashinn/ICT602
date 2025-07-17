@@ -6,7 +6,7 @@ This project integrates **Firebase**, **Google Maps**, **QR Scanning**, and **Ba
 
 ---
 
-## 👥 Team Contribution & Acknowledgement
+## 👥 Project Contribution & Acknowledgement
 
 This mobile application was developed by the **MengTracking Group** for the **ICT602 Mobile Technology** course at UiTM.
 
@@ -20,6 +20,17 @@ This mobile application was developed by the **MengTracking Group** for the **IC
 | Mohamad Firdaus   | Student-side functionality                          |
 
 ---
+
+## 🛠️ Project Setup Instructions 
+
+To run this project successfully on your local machine, follow these steps:
+
+### 1. 🔐 Add Google Maps API Key
+
+Find a file named `local.properties` in the **root directory** of the project (same level as your `build.gradle`) and add:
+
+MAPS_API_KEY= [Your Google Map API KEY]
+<img width="1412" height="293" alt="image" src="https://github.com/user-attachments/assets/5395bb5c-3dba-40d5-9e9c-e6487ebf5770" />
 
 ## 📱 Features
 
