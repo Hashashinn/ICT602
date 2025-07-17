@@ -18,19 +18,14 @@ public class DriverMainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_main);
-        // Request location permission if not already granted
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1001);
         }
-        // Initialize the bottom navigation view
+
         bottomNav = findViewById(R.id.driver_bottom_nav);
-        // Set the default fragment (DriverTrackFragment) on first launch
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.driver_fragment_container, new DriverTrackFragment())
-                    .commit();
-        }
-        // Set listener for navigation item selection
+
+        // Listener for bottom navigation
         bottomNav.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
             int id = item.getItemId();
@@ -50,24 +45,25 @@ public class DriverMainActivity extends AppCompatActivity {
 
             return false;
         });
+
+        // Handle launch intent from AboutUsActivity
+        if (savedInstanceState == null) {
+            String target = getIntent().getStringExtra("fragment");
+            if ("profile".equals(target)) {
+                bottomNav.setSelectedItemId(R.id.nav_profile);
+            } else {
+                bottomNav.setSelectedItemId(R.id.nav_scan); // default
+            }
+        }
     }
-    // Handle back button presses
+
     @Override
     public void onBackPressed() {
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.driver_fragment_container);
-
         if (!(currentFragment instanceof DriverTrackFragment)) {
-            bottomNav.setSelectedItemId(R.id.nav_scan); // Reset to default tab
+            bottomNav.setSelectedItemId(R.id.nav_scan); // Go to main tab
         } else {
-            super.onBackPressed(); // Exit app if already on main tab
-        }
-    }
-    // Ensures correct tab is selected when returning to the activity
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (bottomNav != null) {
-            bottomNav.setSelectedItemId(R.id.nav_scan);
+            super.onBackPressed(); // Exit
         }
     }
 

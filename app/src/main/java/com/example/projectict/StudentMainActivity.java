@@ -19,25 +19,20 @@ public class StudentMainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_main);
-        // Request location permission if not already granted
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1001);
         }
 
         bottomNav = findViewById(R.id.bottom_nav);
 
-        // Load default fragment
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new StudentTrackFragment())
-                .commit();
         // BottomNav Listener
         bottomNav.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
-            int id = item.getItemId();
 
-            if (id == R.id.nav_trace) {
+            if (item.getItemId() == R.id.nav_trace) {
                 selectedFragment = new StudentTrackFragment();
-            } else if (id == R.id.nav_profile) {
+            } else if (item.getItemId() == R.id.nav_profile) {
                 selectedFragment = new StudentProfileFragment();
             }
 
@@ -45,9 +40,20 @@ public class StudentMainActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, selectedFragment)
                         .commit();
+                return true;
             }
 
-            return true;
+            return false;
         });
+
+        // Set initial tab only if first launch
+        if (savedInstanceState == null) {
+            String target = getIntent().getStringExtra("fragment");
+            if ("profile".equals(target)) {
+                bottomNav.setSelectedItemId(R.id.nav_profile);
+            } else {
+                bottomNav.setSelectedItemId(R.id.nav_trace);
+            }
+        }
     }
 }

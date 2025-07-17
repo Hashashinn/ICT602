@@ -68,6 +68,14 @@ public class DriverProfileFragment extends Fragment {
                     .show();
         });
 
+        //About US Button listener
+        LinearLayout aboutUsBtn = view.findViewById(R.id.aboutUs);
+
+        aboutUsBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), AboutUsActivity.class);
+            intent.putExtra("source", "driver");
+            startActivity(intent);
+        });
 
         return view;
     }

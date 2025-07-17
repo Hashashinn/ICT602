@@ -44,5 +44,6 @@
         <activity android:name=".DriverScanActivity" android:exported="true" />
         <activity android:name=".StudentMainActivity" android:exported="true" />
         <activity android:name=".DriverMainActivity" android:exported="true" />
+        <activity android:name=".AboutUsActivity" />
     </application>
 </manifest>
